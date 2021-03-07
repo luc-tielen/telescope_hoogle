@@ -25,7 +25,7 @@ end
 
 local function strip_html_tags(doc)
   -- TODO handle pre tags specially, use syntax highlighting for haskell?
-  return doc:gsub('</?[^>]+>', '')
+  return doc:gsub('</?[^>]+>\n?', '')
 end
 
 local function format_html_chars(doc)
@@ -95,6 +95,7 @@ end
 
 
 -- TODO
+-- wrapping of text in preview window
 -- add custom keybindings
 -- actions:
 --   open browser
