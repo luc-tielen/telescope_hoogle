@@ -14,17 +14,33 @@ local function prompt_to_hoogle_cmd(opts)
 
     -- TODO results showing up twice when typing quickly?
     local count = opts.count or 500
-    return P({
+    return {
       command = 'hoogle',
       args = vim.tbl_flatten { '--json', '--count=' .. count, prompt }
-    })
+    }
   end
 
   return to_hoogle_cmd
 end
 
+local function strip_html_tags(doc)
+  -- TODO handle pre tags specially, use syntax highlighting for haskell?
+  return doc:gsub('</?[^>]+>', '')
+end
+
+local function format_html_chars(doc)
+  return doc:gsub('&lt;', '<')
+            :gsub('&gt;', '>')
+            :gsub('&amp', '&')
+end
+
+local function html_to_term(doc)
+  return format_html_chars(strip_html_tags(doc))
+end
+
 local function show_preview(entry, buf)
-  local lines = vim.split(entry.docs, '\n')
+  local docs = html_to_term(entry.docs)
+  local lines = vim.split(docs, '\n')
   vim.api.nvim_buf_set_lines(buf, 0, -1, true, lines)
 end
 
@@ -67,24 +83,25 @@ local function setup(opts)
   pickers.new(opts, {
     prompt_title = 'Live Hoogle search',
     finder = finder,
+    -- TODO don't use display_content
     previewer = previewers.display_content.new(opts),
     attach_mappings = function(_, map)
-      -- TODO mappings
+      -- TODO mappings, allow custom mappings
       -- map('i', '<CR>', actions.close)
       return true
     end
   }):find()
 end
 
--- Testing code:
-
-test = setup
 
 -- TODO
--- show pretty preview, not raw HTML
 -- add custom keybindings
 -- actions:
 --   open browser
 --   copy type
 --   copy import
+
+
+-- Testing code:
+test = setup
 vim.cmd 'nnoremap <leader>t :lua test()<cr>'
