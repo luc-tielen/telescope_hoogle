@@ -9,5 +9,6 @@ TODO
 
 ## Development
 
-TODO
-
+```bash
+nvim --cmd "set rtp+=$(pwd)"
+```
