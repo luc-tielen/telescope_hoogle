@@ -1,8 +1,8 @@
-local neorocks = require 'plenary.neorocks'
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
 local previewers = require 'telescope.previewers'
+local entry_display = require('telescope.pickers.entry_display')
 local PreprocessJob = require 'telescope.hoogle.preprocess_job'
 local json = require 'telescope.hoogle.json'
 
@@ -13,7 +13,7 @@ local function prompt_to_hoogle_cmd(opts)
     end
 
     -- TODO results showing up twice when typing quickly?
-    local count = opts.count or 500
+    local count = opts.count or 50
     return {
       command = 'hoogle',
       args = vim.tbl_flatten { '--json', '--count=' .. count, prompt }
@@ -34,27 +34,36 @@ local function format_html_chars(doc)
             :gsub('&amp', '&')
 end
 
-local function html_to_term(doc)
+local function format_for_preview(doc)
   return format_html_chars(strip_html_tags(doc))
 end
 
 local function show_preview(entry, buf)
-  local docs = html_to_term(entry.docs)
+  local docs = format_for_preview(entry.docs)
   local lines = vim.split(docs, '\n')
   vim.api.nvim_buf_set_lines(buf, 0, -1, true, lines)
 end
 
+local function make_display(entry)
+  local module = entry.module_name
+
+  local displayer = entry_display.create {
+    separator = '',
+    items = {
+      { width = module and #module + 1 or 0 },
+      { remaining = true },
+    }
+  }
+  return displayer { {module, "Structure"}, {entry.item, "Type"} }
+end
+
 local function entry_maker(data)
-  local module_name = (data.module or {}).name
-  local line = module_name
-    and module_name .. ' ' .. data.item
-    or data.item
   return {
     valid = true,
-    value = line,
-    ordinal = line,
-    display = line,
+    module_name = (data.module or {}).name,
+    item = data.item,
     docs = data.docs,
+    display = make_display,
     preview_command = show_preview
   }
 end
@@ -96,11 +105,12 @@ end
 
 -- TODO
 -- wrapping of text in preview window
+-- syntax highlighting
 -- add custom keybindings
 -- actions:
 --   open browser
 --   copy type
---   copy import
+--   copy import (module)
 
 
 -- Testing code:
