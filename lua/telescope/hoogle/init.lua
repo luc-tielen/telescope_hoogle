@@ -32,20 +32,19 @@ local function entry_maker(data)
   }
 end
 
-test = function()
+local function setup(opts)
   if neorocks.ensure_installed('lua-cjson') then
     neorocks.install('lua-cjson')
     return
   end
   if vim.fn.executable('hoogle') == '1' then
-    -- TODO check for --json option, check for hoogle generate
     vim.api.nvim_err_writeln("telescope.hoogle: 'hoogle' command not found! Aborting.")
     return
   end
 
   local finder = finders.new_job(prompt_to_hoogle_cmd, entry_maker)
 
-  local opts = {} -- TODO what goes in here?
+  opts = opts or {}
   pickers.new(opts, {
     prompt_title = 'Live Hoogle search',
     finder = finder,
@@ -58,9 +57,14 @@ test = function()
   }):find()
 end
 
+-- Testing code:
+
+test = setup
+
 -- TODO
--- add custom keybindings
+-- remove need for custom shell script
 -- show pretty preview, not raw HTML
+-- add custom keybindings
 -- actions:
 --   open browser
 --   copy type
