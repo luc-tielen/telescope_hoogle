@@ -2,6 +2,7 @@ local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
 local previewers = require 'telescope.previewers'
+local previewer_utils = require'telescope.previewers.utils'
 local entry_display = require('telescope.pickers.entry_display')
 local PreprocessJob = require 'telescope.hoogle.preprocess_job'
 local json = require 'telescope.hoogle.json'
@@ -24,8 +25,7 @@ local function prompt_to_hoogle_cmd(opts)
 end
 
 local function strip_html_tags(doc)
-  -- TODO handle pre tags specially, use syntax highlighting for haskell?
-  return doc:gsub('</?[^>]+>\n?', '')
+  return doc -- doc:gsub('</?[^>]+>\n?', '')
 end
 
 local function format_html_chars(doc)
@@ -42,6 +42,8 @@ local function show_preview(entry, buf)
   local docs = format_for_preview(entry.docs)
   local lines = vim.split(docs, '\n')
   vim.api.nvim_buf_set_lines(buf, 0, -1, true, lines)
+  vim.api.nvim_buf_set_var(buf, 'conceallevel', 2)
+  previewer_utils.highlighter(buf, 'telescope_hoogle_doc')
 end
 
 local function make_display(entry)
@@ -105,7 +107,7 @@ end
 
 -- TODO
 -- wrapping of text in preview window
--- syntax highlighting
+-- handle concealing automatically in preview window
 -- add custom keybindings
 -- actions:
 --   open browser
