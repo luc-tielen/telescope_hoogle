@@ -13,5 +13,3 @@ highlight def link codeBlock SpecialComment
 highlight def link teletype Statement
 highlight def link anchor Identifier
 highlight def link idiomatic Structure
-
-" TODO autocommand for conceal?

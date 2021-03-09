@@ -42,8 +42,14 @@ local function show_preview(entry, buf)
   local docs = format_for_preview(entry.docs)
   local lines = vim.split(docs, '\n')
   vim.api.nvim_buf_set_lines(buf, 0, -1, true, lines)
-  vim.api.nvim_buf_set_var(buf, 'conceallevel', 2)
   previewer_utils.highlighter(buf, 'telescope_hoogle_doc')
+
+  vim.api.nvim_buf_call(buf, function()
+    local win = vim.fn.win_findbuf(buf)[1]
+    vim.wo[win].conceallevel = 2
+    vim.wo[win].wrap = true
+    vim.wo[win].linebreak = true
+  end)
 end
 
 local function make_display(entry)
