@@ -1,6 +1,7 @@
 local pickers = require 'telescope.pickers'
 local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
+local actions_state = require 'telescope.actions.state'
 local previewers = require 'telescope.previewers'
 local previewer_utils = require'telescope.previewers.utils'
 local entry_display = require('telescope.pickers.entry_display')
@@ -55,14 +56,15 @@ local function make_display(entry)
       { remaining = true },
     }
   }
-  return displayer { {module, "Structure"}, {entry.item, "Type"} }
+  return displayer { {module, "Structure"}, {entry.type_sig, "Type"} }
 end
 
 local function entry_maker(data)
   return {
     valid = true,
     module_name = (data.module or {}).name,
-    item = data.item,
+    type_sig = data.item,
+    url = data.url,
     docs = data.docs,
     display = make_display,
     preview_command = show_preview
@@ -80,15 +82,25 @@ local function merge(...)
   return vim.tbl_extend('keep', ...)
 end
 
-local function setup(opts)
-  opts = opts or {}
-  opts = merge(opts, { layout_strategy = 'horizontal', layout_config = { preview_width = 80 }})
+local function copy_to_clipboard(text)
+  local reg = vim.o.clipboard == 'unnamedplus' and '+' or '"'
+  vim.fn.setreg(reg, text)
+end
 
-  if vim.fn.executable('hoogle') == '1' then
-    vim.api.nvim_err_writeln("telescope.hoogle: 'hoogle' command not found! Aborting.")
-    return
+local function open_browser(url)
+  local browser_cmd
+  if vim.fn.has('unix') == 1 then
+    browser_cmd = 'sensible-browser'
   end
+  if vim.fn.has('mac') == 1 then
+    browser_cmd = 'open'
+  end
+  -- TODO: windows support?
 
+  vim.cmd(':silent !' .. browser_cmd .. ' ' .. vim.fn.fnameescape(url))
+end
+
+local function live_hoogle_search(opts)
   local finder = PreprocessJob:new({
     fn_command = prompt_to_hoogle_cmd(opts),
     fn_preprocess = preprocess_data,
@@ -106,20 +118,39 @@ local function setup(opts)
         return true
       end
 
-      -- TODO default mappings
-      -- map('i', '<CR>', actions.close)
+      map('i', '<CR>', function()
+        local entry = actions_state.get_selected_entry()
+        P(entry)
+        copy_to_clipboard(entry.type_sig)
+        actions.close(buf)
+      end)
+      map('i', '<C-b>', function()
+        local entry = actions_state.get_selected_entry()
+        open_browser(entry.url)
+        actions.close(buf)
+      end)
+
       return true
     end
   }):find()
 end
 
+local function setup(opts)
+  if vim.fn.executable('hoogle') == '1' then
+    vim.api.nvim_err_writeln("telescope.hoogle: 'hoogle' command not found! Aborting.")
+    return
+  end
+
+  opts = merge(opts or {}, {
+    layout_strategy = 'horizontal',
+    layout_config = { preview_width = 80 }
+  })
+
+  live_hoogle_search(opts)
+end
+
 
 -- TODO
--- add custom keybindings
--- actions: (action_state)
---   open browser
---   copy type
---   copy import (module)
 -- turn into actual telescope extension
 -- licecap gif
 
