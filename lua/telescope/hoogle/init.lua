@@ -24,18 +24,10 @@ local function prompt_to_hoogle_cmd(opts)
   return to_hoogle_cmd
 end
 
-local function strip_html_tags(doc)
-  return doc -- doc:gsub('</?[^>]+>\n?', '')
-end
-
-local function format_html_chars(doc)
+local function format_for_preview(doc)
   return doc:gsub('&lt;', '<')
             :gsub('&gt;', '>')
             :gsub('&amp', '&')
-end
-
-local function format_for_preview(doc)
-  return format_html_chars(strip_html_tags(doc))
 end
 
 local function show_preview(entry, buf)
@@ -49,6 +41,7 @@ local function show_preview(entry, buf)
     vim.wo[win].conceallevel = 2
     vim.wo[win].wrap = true
     vim.wo[win].linebreak = true
+    vim.bo[buf].textwidth = 80
   end)
 end
 
@@ -83,8 +76,13 @@ local function preprocess_data(data)
   return json.parse(data)
 end
 
+local function merge(...)
+  return vim.tbl_extend('keep', ...)
+end
+
 local function setup(opts)
   opts = opts or {}
+  opts = merge(opts, { layout_strategy = 'horizontal', layout_config = { preview_width = 80 }})
 
   if vim.fn.executable('hoogle') == '1' then
     vim.api.nvim_err_writeln("telescope.hoogle: 'hoogle' command not found! Aborting.")
@@ -112,14 +110,13 @@ end
 
 
 -- TODO
--- wrapping of text in preview window
--- handle concealing automatically in preview window
 -- add custom keybindings
--- actions:
+-- actions: (action_state)
 --   open browser
 --   copy type
 --   copy import (module)
-
+-- turn into actual telescope extension
+-- licecap gif
 
 -- Testing code:
 test = setup
