@@ -114,11 +114,6 @@ local function live_hoogle_search(opts)
     -- TODO don't use display_content
     previewer = previewers.display_content.new(opts),
     attach_mappings = function(buf, map)
-      if opts.attach_mappings then
-        opts.attach_mappings(buf, map)
-        return true
-      end
-
       map('i', '<CR>', function()
         local entry = actions_state.get_selected_entry()
         copy_to_clipboard(entry.type_sig)
