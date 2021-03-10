@@ -100,8 +100,13 @@ local function setup(opts)
     finder = finder,
     -- TODO don't use display_content
     previewer = previewers.display_content.new(opts),
-    attach_mappings = function(_, map)
-      -- TODO mappings, allow custom mappings
+    attach_mappings = function(buf, map)
+      if opts.attach_mappings then
+        opts.attach_mappings(buf, map)
+        return true
+      end
+
+      -- TODO default mappings
       -- map('i', '<CR>', actions.close)
       return true
     end
