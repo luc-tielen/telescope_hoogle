@@ -121,7 +121,6 @@ local function live_hoogle_search(opts)
 
       map('i', '<CR>', function()
         local entry = actions_state.get_selected_entry()
-        P(entry)
         copy_to_clipboard(entry.type_sig)
         actions.close(buf)
       end)
