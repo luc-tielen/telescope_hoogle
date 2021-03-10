@@ -5,8 +5,8 @@ local actions_state = require 'telescope.actions.state'
 local previewers = require 'telescope.previewers'
 local previewer_utils = require'telescope.previewers.utils'
 local entry_display = require('telescope.pickers.entry_display')
-local PreprocessJob = require 'telescope.hoogle.preprocess_job'
-local json = require 'telescope.hoogle.json'
+local PreprocessJob = require 'telescope._extensions.hoogle.preprocess_job'
+local json = require 'telescope._extensions.hoogle.json'
 
 local function prompt_to_hoogle_cmd(opts)
   local function to_hoogle_cmd(_, prompt)
@@ -43,6 +43,7 @@ local function show_preview(entry, buf)
     vim.wo[win].wrap = true
     vim.wo[win].linebreak = true
     vim.bo[buf].textwidth = 80
+    vim.wo[win].number = true
   end)
 end
 
@@ -137,7 +138,7 @@ end
 
 local function setup(opts)
   if vim.fn.executable('hoogle') == '1' then
-    vim.api.nvim_err_writeln("telescope.hoogle: 'hoogle' command not found! Aborting.")
+    error("telescope_hoogle: 'hoogle' executable not found! Aborting.")
     return
   end
 
@@ -149,11 +150,4 @@ local function setup(opts)
   live_hoogle_search(opts)
 end
 
-
--- TODO
--- turn into actual telescope extension
--- licecap gif
-
--- Testing code:
-test = setup
-vim.cmd 'nnoremap <leader>t :lua test()<cr>'
+return setup
