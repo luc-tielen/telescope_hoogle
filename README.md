@@ -3,12 +3,22 @@
 
 A telescope plugin for Hoogle.
 
+## Keybindings
+
+- `<C-b>`: opens selected entry in the browser:
+
+![](./hoogle_browser.gif)
+
+- `<cr>`: copies selected entry to clipboard:
+
+![](./hoogle_paste.gif)
+
 ## Installation
 
 1. Install [Telescope](https://github.com/nvim-telescope/telescope.nvim)
 1. Install a recent Hoogle (needs to support `--json` flag)
 2. Run `hoogle generate`
-3. Install this plugin (`paq 'luc-tielen/telescope_hoogle'`)
+3. Install this plugin (for example: `paq 'luc-tielen/telescope_hoogle'`)
 4. Add the following Lua snippet to your nvim config:
 
 ```lua
@@ -19,11 +29,10 @@ telescope.setup {
 telescope.load_extension('hoogle')
 ```
 
-By default, `<cr>` selects the currently selected type signature. `<c-b>` opens
-Hoogle in the browser (with the current selection).
-
 ## Development
 
 ```bash
-nvim --cmd "set rtp+=$(pwd)"
+$ git clone git@github.com:luc-tielen/telescope_hoogle.git
+$ cd telescope_hoogle
+$ nvim --cmd "set rtp+=$(pwd)"
 ```
