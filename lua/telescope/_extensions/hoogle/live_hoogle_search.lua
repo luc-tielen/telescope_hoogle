@@ -43,7 +43,6 @@ local function show_preview(entry, buf)
     vim.wo[win].wrap = true
     vim.wo[win].linebreak = true
     vim.bo[buf].textwidth = 80
-    vim.wo[win].number = true
   end)
 end
 
