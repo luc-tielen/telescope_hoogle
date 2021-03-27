@@ -1,5 +1,4 @@
 local pickers = require 'telescope.pickers'
-local finders = require 'telescope.finders'
 local actions = require 'telescope.actions'
 local actions_state = require 'telescope.actions.state'
 local previewers = require 'telescope.previewers'
@@ -87,16 +86,11 @@ local function copy_to_clipboard(text)
   vim.fn.setreg(reg, text)
 end
 
-local function open_browser(url)
-  local browser_cmd
-  if vim.fn.has('unix') == 1 then
-    browser_cmd = 'sensible-browser'
+local function open_browser(browser_cmd, url)
+  if not browser_cmd or browser_cmd == "" then
+      error("telescope_hoogle: unable to open browser, no command specified.")
+      return
   end
-  if vim.fn.has('mac') == 1 then
-    browser_cmd = 'open'
-  end
-  -- TODO: windows support?
-
   vim.cmd(':silent !' .. browser_cmd .. ' ' .. vim.fn.fnameescape(url))
 end
 
@@ -120,7 +114,7 @@ local function live_hoogle_search(opts)
       end)
       map('i', '<C-b>', function()
         local entry = actions_state.get_selected_entry()
-        open_browser(entry.url)
+        open_browser(opts.browser_cmd, entry.url)
         actions.close(buf)
       end)
 
@@ -135,9 +129,19 @@ local function setup(opts)
     return
   end
 
+  local browser_cmd = ""
+  if vim.fn.has('unix') == 1 then
+      browser_cmd = 'sensible-browser'
+  end
+  if vim.fn.has('mac') == 1 then
+      browser_cmd = 'open'
+  end
+  -- TODO: Add Windows default?
+
   opts = merge(opts or {}, {
     layout_strategy = 'horizontal',
-    layout_config = { preview_width = 80 }
+    layout_config = { preview_width = 80 },
+    browser_cmd = browser_cmd,
   })
 
   live_hoogle_search(opts)
