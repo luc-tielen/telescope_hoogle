@@ -1,4 +1,5 @@
 local pickers = require 'telescope.pickers'
+local sorters = require 'telescope.sorters'
 local actions = require 'telescope.actions'
 local actions_state = require 'telescope.actions.state'
 local previewers = require 'telescope.previewers'
@@ -104,6 +105,7 @@ local function live_hoogle_search(opts)
   pickers.new(opts, {
     prompt_title = 'Live Hoogle search',
     finder = finder,
+    sorter = sorters.get_generic_fuzzy_sorter(opts),
     -- TODO don't use display_content
     previewer = previewers.display_content.new(opts),
     attach_mappings = function(buf, map)
