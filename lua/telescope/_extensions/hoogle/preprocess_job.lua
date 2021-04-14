@@ -26,7 +26,7 @@ function JobFinder:new(opts)
   opts = opts or {}
 
   local obj = setmetatable({
-    entry_maker = opts.entry_maker or make_entry.from_string,
+    entry_maker = opts.entry_maker,
     fn_command = opts.fn_command,
     fn_preprocess = opts.fn_preprocess or default_preprocess,
     cwd = opts.cwd,
