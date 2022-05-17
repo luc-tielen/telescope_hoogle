@@ -67,6 +67,7 @@ local function entry_maker(data)
     url = data.url,
     docs = data.docs,
     display = make_display,
+    ordinal = data.item .. data.url,
     preview_command = show_preview
   }
 end

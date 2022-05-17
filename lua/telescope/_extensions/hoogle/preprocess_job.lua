@@ -58,7 +58,12 @@ function JobFinder:_find(prompt, process_result, process_complete)
         line = self.entry_maker(line)
       end
 
-      process_result(line)
+      -- NOTE: Because we are calling this within a loop, 
+      -- we must defer processing until nvim API functions are safe to call.
+      vim.defer_fn(function()
+        process_result(line)
+      end,
+      0)
     end
   end
 
