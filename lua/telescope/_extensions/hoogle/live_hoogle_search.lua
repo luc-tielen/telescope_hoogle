@@ -114,7 +114,7 @@ local function live_hoogle_search(opts)
     -- TODO don't use display_content
     previewer = previewers.display_content.new(opts),
     attach_mappings = function(buf, map)
-      map('i', '<CR>', function()
+      actions.select_default:replace(function()
         local entry = actions_state.get_selected_entry()
         copy_to_clipboard(entry.type_sig)
         actions.close(buf)
