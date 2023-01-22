@@ -80,7 +80,7 @@ local function preprocess_data(data)
 end
 
 local function merge(...)
-  return vim.tbl_extend('keep', ...)
+  return vim.tbl_extend('force', ...)
 end
 
 local function copy_to_clipboard(text)
