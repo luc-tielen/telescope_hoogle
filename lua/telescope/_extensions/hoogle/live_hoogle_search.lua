@@ -56,7 +56,7 @@ local function make_display(entry)
       { remaining = true },
     }
   }
-  return displayer { {module, "Structure"}, {entry.type_sig, "Type"} }
+  return displayer { {module, "Include"}, {entry.type_sig, "Type"} }
 end
 
 local function entry_maker(data)
