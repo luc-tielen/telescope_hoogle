@@ -100,7 +100,11 @@ local function open_browser(url)
   if vim.fn.has('mac') == 1 then
     browser_cmd = 'open'
   end
-  -- TODO: windows support?
+  if vim.fn.has('windows') == 1 then
+    if vim.fn.executable('explorer') == 1 then
+        browser_cmd = 'explorer'
+    end
+  end
 
   vim.cmd(':silent !' .. browser_cmd .. ' ' .. vim.fn.fnameescape(url))
 end
