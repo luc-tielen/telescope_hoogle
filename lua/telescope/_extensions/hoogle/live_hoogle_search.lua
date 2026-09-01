@@ -18,7 +18,7 @@ local function prompt_to_hoogle_cmd(opts)
     local count = opts.count or 50
     return {
       command = 'hoogle',
-      args = vim.tbl_flatten { '--json', '--count=' .. count, prompt }
+      args = vim.tbl_flatten { '--json', '--count=' .. count, '--', prompt }
     }
   end
 
